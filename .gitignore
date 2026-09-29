@@ -1,6 +1,7 @@
 node_modules/
 dist/
 production/
+.playwright-cli/
 public/film-review.html
 public/book-proof.html
 public/media/book-veo-candidate.mp4
