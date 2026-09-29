@@ -1,9 +1,19 @@
-import React,{useEffect,useRef} from 'react';
+import React,{useEffect,useRef,useState} from 'react';
 const clamp=x=>Math.max(0,Math.min(1,x));
 const ease=x=>{x=clamp(x);return x*x*(3-2*x)};
+const frameCount=48;
+const framePath=index=>`${import.meta.env.BASE_URL}media/mobile-book-frames/scene-${String(index).padStart(2,'0')}.webp`;
+function useMobileFilm(){
+ const [mobile,setMobile]=useState(()=>matchMedia('(max-width:699px)').matches);
+ useEffect(()=>{const query=matchMedia('(max-width:699px)');const update=()=>setMobile(query.matches);query.addEventListener?.('change',update);return()=>query.removeEventListener?.('change',update)},[]);
+ return mobile;
+}
 export default function BookScene({progress,reduced}){
- const ref=useRef(),state=useRef({progress:0,target:0});state.current.target=reduced?0:progress;
+ const ref=useRef(),state=useRef({progress:0,target:0}),mobileFilm=useMobileFilm();state.current.target=reduced?0:progress;
+ const frameIndex=reduced?0:Math.round(clamp(progress)*(frameCount-1));
+ useEffect(()=>{if(!mobileFilm)return;const timers=[];for(let i=0;i<frameCount;i++){if(i===frameIndex)continue;timers.push(setTimeout(()=>{const image=new Image();image.src=framePath(i)},80+i*35))}return()=>timers.forEach(clearTimeout)},[mobileFilm]);
  useEffect(()=>{
+  if(mobileFilm)return;
   const canvas=ref.current,ctx=canvas.getContext('2d',{alpha:true}),img=new Image();let stopped=false,raf,previous=-1,w=0,h=0,pixelW=0,pixelH=0;
   const paper=document.createElement('canvas');paper.width=1200;paper.height=1500;const pc=paper.getContext('2d');
   let g=pc.createLinearGradient(0,0,1200,1500);g.addColorStop(0,'#fff8e8');g.addColorStop(.7,'#eee0c5');g.addColorStop(1,'#ceba95');pc.fillStyle=g;pc.fillRect(0,0,1200,1500);
@@ -20,7 +30,7 @@ export default function BookScene({progress,reduced}){
    const f=turn<.5?ease(turn*2):ease((turn-.5)*2);const midx=sx+52,midy=sy-296;const ox=turn<.5?(914+506*x)*(1-f)+midx*f:midx*(1-f)+(800-350*x)*f;const oy=turn<.5?(174+344*x)*(1-f)+midy*f:midy*(1-f)+(650+185*x)*f;
    return [ox*(1-t)+sx*t+70*bend*(1-x)*(1-turn)*Math.abs(1-2*turn),oy*(1-t)+sy*t-36*bend*Math.sin(Math.PI*turn)*Math.abs(1-2*turn)-turn*90*bend*(.2+.8*x)];
   }
-  function draw(){if(stopped)return;raf=requestAnimationFrame(draw);const target=state.current.target;let p=state.current.progress;const difference=target-p;p=Math.abs(difference)<.002?target:p+difference*.18;state.current.progress=p;const r=canvas.getBoundingClientRect();const mobile=r.width<700;const dpr=Math.min(devicePixelRatio||1,mobile?1.4:2);const nextPixelW=Math.round(r.width*dpr),nextPixelH=Math.round(r.height*dpr);if(previous===p&&w===r.width&&h===r.height)return;previous=p;w=r.width;h=r.height;if(pixelW!==nextPixelW||pixelH!==nextPixelH){pixelW=nextPixelW;pixelH=nextPixelH;canvas.width=pixelW;canvas.height=pixelH}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  function draw(){if(stopped)return;raf=requestAnimationFrame(draw);const target=state.current.target;let p=state.current.progress;const difference=target-p;p=Math.abs(difference)<.002?target:p+difference*.18;state.current.progress=p;const r=canvas.getBoundingClientRect();const mobile=r.width<700;const dpr=Math.min(devicePixelRatio||1,2);const nextPixelW=Math.round(r.width*dpr),nextPixelH=Math.round(r.height*dpr);if(previous===p&&w===r.width&&h===r.height)return;previous=p;w=r.width;h=r.height;if(pixelW!==nextPixelW||pixelH!==nextPixelH){pixelW=nextPixelW;pixelH=nextPixelH;canvas.width=pixelW;canvas.height=pixelH}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
    if(!img.complete||!img.naturalWidth)return;
    let scale=mobile?Math.max(w/1000,h/1180):Math.max(w/1536,h/1024);const dx=mobile?w*.5-1010*scale:(w-1536*scale)/2,dy=mobile?h*.53-320*scale:(h-1024*scale)/2;
    ctx.save();ctx.translate(dx,dy);ctx.scale(scale,scale);ctx.drawImage(img,0,0,1536,1024);
@@ -31,6 +41,7 @@ export default function BookScene({progress,reduced}){
    }ctx.restore();
   }
   img.onload=()=>{previous=-1};img.src=import.meta.env.BASE_URL+'media/book-base.png';raf=requestAnimationFrame(draw);return()=>{stopped=true;cancelAnimationFrame(raf)};
- },[]);
+ },[mobileFilm]);
+ if(mobileFilm)return <img className="book-scene book-scene-frames" src={framePath(frameIndex)} alt="" aria-hidden="true" draggable="false" decoding="sync" fetchPriority="high"/>;
  return <canvas className="book-scene" ref={ref} role="img" aria-label="An open book in a sunlit sky. Its page reads: Every learner deserves a chance to turn the page. The page turns as you scroll."/>;
 }
