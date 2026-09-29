@@ -1,0 +1,38 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e10]:
+      - generic [ref=e11]: BEYOND LIMITS
+      - generic [ref=e12]: ACADEMICS
+    - navigation [ref=e13]:
+      - link "Our program" [ref=e14] [cursor=pointer]:
+        - /url: "#program"
+      - link "Impact" [ref=e15] [cursor=pointer]:
+        - /url: "#impact"
+      - link "Get involved" [ref=e16] [cursor=pointer]:
+        - /url: "#join"
+    - link "Invest in a learner" [ref=e17] [cursor=pointer]:
+      - /url: "#donate"
+      - text: Invest in a learner ↗
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]: Beyond Limits Academic Program
+      - paragraph [ref=e21]: One student. One tutor. One breakthrough at a time.
+    - generic [ref=e24]:
+      - img "Students working together at computers" [ref=e26]
+      - generic [ref=e27]:
+        - img "A Beyond Limits tutoring session" [ref=e28]
+        - generic [ref=e29]: Room to ask.Time to understand.
+      - img "Beyond Limits summer program students" [ref=e31]
+    - heading [level=1] [ref=e32]:
+      - text: Learning,
+      - emphasis [ref=e33]: within reach.
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]: 04–10
+        - generic [ref=e37]: Student grades served
+      - generic [ref=e38]:
+        - generic [ref=e39]: 1:1
+        - generic [ref=e40]: Personalized tutoring
+      - link "Explore the program" [ref=e41] [cursor=pointer]:
+        - /url: "#participate"
+        - text: Explore the program ↗

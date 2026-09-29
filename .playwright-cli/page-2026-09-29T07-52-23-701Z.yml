@@ -1,0 +1,41 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e10]:
+      - generic [ref=e11]: BEYOND LIMITS
+      - generic [ref=e12]: ACADEMICS
+    - navigation [ref=e13]:
+      - link "Learn" [ref=e14] [cursor=pointer]:
+        - /url: "#learn"
+      - link "Mentor" [ref=e15] [cursor=pointer]:
+        - /url: "#mentor"
+      - link "Give" [ref=e16] [cursor=pointer]:
+        - /url: "#give"
+    - button "Open menu" [ref=e17]
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - text: ACADEMIC SUPPORT · LOWER FAIRFIELD COUNTY
+      - heading [level=1] [ref=e22]:
+        - text: Make roomfor the
+        - emphasis [ref=e23]: next
+        - text: possibility.
+      - paragraph [ref=e24]: Affordable peer-to-peer tutoring in math and science, strengthened by mentoring and enrichment beyond the classroom.
+      - link "Start here" [ref=e25] [cursor=pointer]:
+        - /url: "#start"
+        - text: Start here
+        - generic [aria-hidden] [ref=e26]: ↗
+    - generic [ref=e27]:
+      - img "Beyond Limits summer program community" [ref=e28]
+      - generic [ref=e29]:
+        - generic [ref=e30]: THE PEOPLE BEHIND THE PROGRESS
+        - generic [ref=e31]: Every learner belongs in the picture.
+    - generic [ref=e32]:
+      - generic [ref=e33]: 01 / 03
+      - paragraph [ref=e34]: Equity through access
+    - generic [ref=e36]:
+      - generic [ref=e37]: ONE-TO-ONE TUTORING
+      - generic [ref=e38]: ✦
+      - generic [ref=e39]: INFORMAL MENTORING
+      - generic [ref=e40]: ✦
+      - generic [ref=e41]: ENRICHMENT
+      - generic [ref=e42]: ✦
+      - generic [ref=e43]: COMMUNITY
