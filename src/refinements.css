@@ -34,6 +34,20 @@
 /* Each section uses a restrained motion cue tied to its content. */
 .scroll-stage{opacity:0;transform:translateY(24px);transition:opacity .72s cubic-bezier(.2,.7,.2,1),transform .72s cubic-bezier(.2,.7,.2,1)}
 .scroll-stage.seen{opacity:1;transform:none}
+.learning-card{opacity:0;transform:translateY(25px);transition:opacity .8s,transform .8s}
+.learning-card.seen{opacity:1;transform:none}
+.learning-card-trigger{display:block;width:100%;padding:0;text-align:left}
+.learning-card-trigger .eyebrow{display:block;font-size:9px;margin:0}
+.learning-card-trigger h3{font-size:29px;margin:18px 0}
+.learning-card-trigger p{font-size:15px;line-height:1.55;padding-right:8px;margin:0 0 28px;color:#526479}
+.learning-card-trigger .card-expand{transition:transform .28s,background .28s}
+.learning-card.open .card-expand{transform:rotate(45deg);background:#dfe9e6}
+.learning-card-reveal,.resource-group-reveal{display:grid;grid-template-rows:0fr;transition:grid-template-rows .43s cubic-bezier(.2,.7,.2,1)}
+.learning-card.open .learning-card-reveal,.resource-group.open .resource-group-reveal{grid-template-rows:1fr}
+.learning-card-inner,.resource-group-reveal>div{min-height:0;overflow:hidden}
+.learning-card-detail{opacity:0;transform:translateY(8px);animation:none;transition:opacity .22s,transform .22s}
+.learning-card.open .learning-card-detail{opacity:1;transform:none;transition-delay:.18s}
+.learning-card-trigger:hover .card-expand,.learning-card-trigger:focus-visible .card-expand{background:#dfe9e6}
 .chapter-grid .scroll-stage{border-top-color:#ffffff35}
 .chapter-grid .scroll-stage::before{content:'';display:block;height:2px;width:100%;margin-top:-27px;margin-bottom:25px;background:#d1b674;transform:scaleX(0);transform-origin:left;transition:transform .75s cubic-bezier(.2,.7,.2,1)}
 .chapter-grid .scroll-stage.seen::before{transform:scaleX(1)}
@@ -59,6 +73,8 @@
 .closing-choices .closing-choices-grid>a{display:block}
 .closing-choices .closing-choices-grid>a.scroll-stage{transform:translateY(26px)}
 .closing-choices .closing-choices-grid>a.scroll-stage.seen{transform:none}
+.closing-choices a:focus-visible{background:#f4eedf;transform:translateY(-4px)}
+.quote-controls button:focus-visible{background:#d7e0e5}
 
 /* Scholarship details unfold from the recipient's own name and photograph. */
 details.recipient-row{display:block;padding:0;margin-top:25px;border-top:1px solid var(--line)}
@@ -76,8 +92,13 @@ details.recipient-row{display:block;padding:0;margin-top:25px;border-top:1px sol
 .resources .newsletter-card{max-width:770px;grid-template-columns:180px 1fr;padding-bottom:48px;border-bottom:1px solid #c9cfcc}
 .resource-desk{display:grid;grid-template-columns:minmax(350px,.86fr) minmax(500px,1.14fr);gap:5%;align-items:start}
 .resource-library{border-top:1px solid #bdc8c7}
-.resource-library details{margin:0}
-.resource-library summary{padding:16px 0;min-height:70px}
+.resource-group{border-bottom:1px solid #c6d1d1}
+.resource-group-toggle{display:flex;align-items:center;gap:15px;width:100%;min-height:70px;padding:16px 0;text-align:left;font-size:20px}
+.resource-group-toggle small{font-size:11px;color:#526479;margin-left:auto}
+.resource-group-mark{font-size:21px;line-height:1;width:23px;text-align:right}
+.resource-group-reveal>div{opacity:0;transform:translateY(7px);transition:opacity .23s,transform .23s}
+.resource-group.open .resource-group-reveal>div{opacity:1;transform:none;transition-delay:.17s}
+.resource-group-toggle:hover,.resource-group-toggle:focus-visible{color:#866e3f}
 .resource-row{display:flex;align-items:center;gap:15px;padding:0 10px;border-top:1px solid #d6ded9;transition:background .25s}
 .resource-row:hover,.resource-row:focus-within,.resource-row.selected{background:#e5ebe6}
 .resource-row button{flex:1;text-align:left;font-size:14px;line-height:1.45;padding:17px 0;min-height:52px}
@@ -114,6 +135,9 @@ details.recipient-row{display:block;padding:0;margin-top:25px;border-top:1px sol
   .resources .newsletter-card{grid-template-columns:36% 1fr;gap:17px;padding-bottom:34px}
   .resource-desk{gap:0}
   .resource-preview,.resource-row button,.resource-row .resource-desktop-link{display:none}
+  .resource-group-toggle{font-size:17px}
+  .resource-group-toggle small{font-size:10px}
+  .learning-card-trigger p{margin-bottom:18px}
   .resource-row .resource-mobile-link{display:flex;align-items:center;justify-content:space-between;gap:15px;width:100%;min-height:53px;padding:12px 0;font-size:14px;line-height:1.4}
   .resource-row .resource-mobile-link span{font-size:10px;white-space:nowrap}
   .recipient-row summary{gap:15px}
@@ -121,5 +145,5 @@ details.recipient-row{display:block;padding:0;margin-top:25px;border-top:1px sol
   [data-parallax]>img{transform:scale(1.06) translateY(var(--photo-shift,0%))}
 }
 @media(max-width:390px){.header .reading-nav{width:39vw}.reading-current{gap:4px}.reading-nav .reading-toggle{font-size:10px;padding-left:7px;padding-right:7px}}
-@media(prefers-reduced-motion:reduce){.scroll-stage,.chapter-grid .scroll-stage::before,.join-grid::before,.reflection-neighbors>div,.header,.header::before,.header .wordmark img,.header .menu-button,.recipient-open,.chapter-progress span{transition:none}.quote-copy,.preview-paper,.preview-meta,.recipient-detail,.reading-nav.is-arriving .chapter-progress span.complete{animation:none}[data-parallax]>img{transform:none;will-change:auto}}
+@media(prefers-reduced-motion:reduce){.scroll-stage,.chapter-grid .scroll-stage::before,.join-grid::before,.reflection-neighbors>div,.header,.header::before,.header .wordmark img,.header .menu-button,.recipient-open,.chapter-progress span,.learning-card,.learning-card-reveal,.resource-group-reveal,.learning-card-detail,.resource-group-reveal>div{transition:none}.quote-copy,.preview-paper,.preview-meta,.recipient-detail,.reading-nav.is-arriving .chapter-progress span.complete{animation:none}[data-parallax]>img{transform:none;will-change:auto}}
 @media(prefers-contrast:more){.header.over-dark::before{background:#0e2946;border:2px solid white;backdrop-filter:none;-webkit-backdrop-filter:none}.header.over-dark{color:#fff}.header.over-dark .desktop-nav>.nav-group>a,.header.over-dark .menu-button{color:#fff}}
