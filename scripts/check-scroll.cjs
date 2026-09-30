@@ -1,23 +1,25 @@
 // PLAYWRIGHT_MODULE may point to an existing Playwright installation.
-const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const playwright=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const browserType=playwright[process.env.BROWSER||'chromium'];
 const assert=require('node:assert/strict');
 const base=process.env.SITE_URL||'http://127.0.0.1:4194/';
 (async()=>{
- const browser=await chromium.launch();
+ const browser=await browserType.launch();
  try{
  for(const width of [390,1440])for(const reducedMotion of ['no-preference','reduce']){
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion});
+  const failed=new Set();await page.route('**/book-film-h3/*.webp',async route=>{const url=route.request().url();if(process.env.FAULT_TEST&&!failed.has(url)){failed.add(url);return route.abort()}if(process.env.FAULT_TEST)await new Promise(r=>setTimeout(r,120));return route.continue()});
   await page.goto(base);
   if(reducedMotion==='reduce'){
    assert.equal(await page.locator('.hero-track.reduced').count(),1);
    assert.equal(await page.locator('.scroll-cue').count(),0);
-   const url=new URL(base);url.searchParams.set('motion','full');await page.goto(url.href);
+   await page.getByRole('button',{name:'Turn the pages',exact:true}).click();
    await page.reload(); // Explicit choice must survive a return visit without the query.
   }
   assert.equal(await page.locator('.hero-track.reduced').count(),0);
   for(const progress of [0,.35,1,.55,0]){
    const expected=Math.round(progress*242);
-   await page.evaluate(p=>{const h=document.querySelector('.hero-track');scrollTo({top:h.offsetTop+p*(h.offsetHeight-innerHeight),behavior:'instant'})},progress);
+   await page.evaluate(p=>{const h=document.querySelector('.hero-track');scrollTo({top:h.offsetTop+p*(h.offsetHeight-h.querySelector('.hero-sticky').offsetHeight),behavior:'instant'})},progress);
    await page.waitForFunction(n=>Math.abs(Number(document.querySelector('canvas').dataset.frame)-n)<=1,expected,{timeout:20000});
    assert.equal(await page.locator('.scroll-cue').count(),progress===0?1:0);
   }

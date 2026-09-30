@@ -7,7 +7,8 @@ export default function BookScene({progress,reduced}){
  const target=reduced?0:Math.round(Math.max(0,Math.min(1,progress))*(COUNT-1));
  useEffect(()=>{
   const el=canvas.current,ctx=el.getContext('2d');let stopped=false,latest=0,shown=-1;
-  const cache=new Map();
+  const cache=new Map(),pending=new Map(),attempts=new Map(),timers=new Set();
+  let direction=1;
   function draw(i){
    const img=cache.get(i);if(stopped||!img?.complete||!img.naturalWidth)return;
    const {width:w,height:h}=el.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
@@ -22,12 +23,31 @@ export default function BookScene({progress,reduced}){
    }
    shown=i;el.dataset.frame=String(i);
   }
-  function load(i){if(i<0||i>=COUNT||cache.has(i))return;const img=new Image();cache.set(i,img);img.onload=()=>{if(stopped)return;if(i===latest||shown<0)draw(i)};img.src=path(i)}
-  function update(i){latest=i;load(i);draw(i);for(let n=1;n<=5;n++){load(i+n);load(i-n)}
-   for(const [key,img] of cache){if(Math.abs(key-i)>8&&key!==shown){img.onload=null;cache.delete(key)}}
+  function candidates(){return [latest,...Array.from({length:5},(_,n)=>latest+(n+1)*direction),...Array.from({length:2},(_,n)=>latest-(n+1)*direction)].filter(i=>i>=0&&i<COUNT)}
+  function pump(){
+   if(stopped)return;
+   for(const i of candidates()){
+    if(pending.size>=3)break;
+    if(cache.has(i)||pending.has(i)||(attempts.get(i)||0)>=3)continue;
+    const img=new Image();pending.set(i,img);attempts.set(i,(attempts.get(i)||0)+1);
+    const finish=()=>{img.onload=null;img.onerror=null;pending.delete(i)};
+    img.onload=()=>{finish();if(stopped)return;cache.set(i,img);attempts.delete(i);
+     // Display the closest ready frame while the exact target is loading.
+     const nearest=[...cache.keys()].sort((a,b)=>Math.abs(a-latest)-Math.abs(b-latest))[0];
+     if(shown<0||Math.abs(nearest-latest)<Math.abs(shown-latest))draw(nearest);
+     for(const key of cache.keys())if(Math.abs(key-latest)>12&&key!==shown)cache.delete(key);
+     pump();
+    };
+    img.onerror=()=>{finish();if(stopped)return;const timer=setTimeout(()=>{timers.delete(timer);pump()},300*(attempts.get(i)||1));timers.add(timer)};
+    img.src=path(i);
+   }
   }
-  const resize=()=>{if(shown>=0)draw(shown)};const observer=new ResizeObserver(resize);observer.observe(el);
-  engine.current=update;update(0);return()=>{stopped=true;observer.disconnect();for(const img of cache.values())img.onload=null;cache.clear();engine.current=null};
+  function update(i){direction=i>=latest?1:-1;latest=i;draw(i);pump()}
+  const resize=()=>{if(shown>=0)draw(shown)};
+  const recover=()=>{if(document.hidden)return;attempts.clear();update(latest);resize()};
+  const observer=new ResizeObserver(resize);observer.observe(el);
+  addEventListener('online',recover);addEventListener('pageshow',recover);document.addEventListener('visibilitychange',recover);
+  engine.current=update;update(0);return()=>{stopped=true;observer.disconnect();removeEventListener('online',recover);removeEventListener('pageshow',recover);document.removeEventListener('visibilitychange',recover);for(const timer of timers)clearTimeout(timer);for(const img of pending.values()){img.onload=null;img.onerror=null}pending.clear();cache.clear();engine.current=null};
  },[]);
  useEffect(()=>{engine.current?.(target)},[target]);
  return <canvas className="book-scene" ref={canvas} role="img" aria-label="An open book in warm sunlight. Three pages turn as you scroll."/>;
