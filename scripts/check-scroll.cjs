@@ -8,7 +8,7 @@ const base=process.env.SITE_URL||'http://127.0.0.1:4194/';
  try{
  for(const width of [390,1440])for(const reducedMotion of ['no-preference','reduce']){
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion});
-  const failed=new Set();await page.route('**/book-film-h3/*.webp',async route=>{const url=route.request().url();if(process.env.FAULT_TEST&&!failed.has(url)){failed.add(url);return route.abort()}if(process.env.FAULT_TEST)await new Promise(r=>setTimeout(r,120));return route.continue()});
+  const failed=new Set();await page.route('**/book-film-h3*/*.webp',async route=>{const url=route.request().url();if(process.env.FAULT_TEST&&!failed.has(url)){failed.add(url);return route.abort()}if(process.env.FAULT_TEST)await new Promise(r=>setTimeout(r,120));return route.continue()});
   await page.goto(base);
   assert.equal(await page.getByRole('button',{name:'Turn the pages',exact:true}).count(),0);
   assert.equal(await page.locator('.hero-track.reduced').count(),0);
