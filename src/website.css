@@ -8,3 +8,6 @@
 
 /* The exact logo uses real alpha; blending would tint its brand colors. */
 .wordmark img,footer>img{mix-blend-mode:normal}
+
+/* A reading cadence coordinated with the approved page-turn film. */
+.hero-track:not(.reduced){height:650svh}.chapter-line{display:block;will-change:transform,opacity}.hero-actions>div{display:inline-flex}.hero-rail>a{will-change:transform,opacity}
