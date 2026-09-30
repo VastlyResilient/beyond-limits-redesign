@@ -10,12 +10,7 @@ const base=process.env.SITE_URL||'http://127.0.0.1:4194/';
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion});
   const failed=new Set();await page.route('**/book-film-h3/*.webp',async route=>{const url=route.request().url();if(process.env.FAULT_TEST&&!failed.has(url)){failed.add(url);return route.abort()}if(process.env.FAULT_TEST)await new Promise(r=>setTimeout(r,120));return route.continue()});
   await page.goto(base);
-  if(reducedMotion==='reduce'){
-   assert.equal(await page.locator('.hero-track.reduced').count(),1);
-   assert.equal(await page.locator('.scroll-cue').count(),0);
-   await page.getByRole('button',{name:'Turn the pages',exact:true}).click();
-   await page.reload(); // Explicit choice must survive a return visit without the query.
-  }
+  assert.equal(await page.getByRole('button',{name:'Turn the pages',exact:true}).count(),0);
   assert.equal(await page.locator('.hero-track.reduced').count(),0);
   for(const progress of [0,.35,1,.55,0]){
    const expected=Math.round(progress*242);
