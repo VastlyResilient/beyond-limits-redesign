@@ -27,7 +27,9 @@ const base=process.env.SITE_URL||'http://127.0.0.1:4194/';
    await page.getByRole('button',{name:'Use reduced motion'}).click();await page.reload();
    assert.equal(await page.locator('.hero-track.reduced').count(),1);
   }
-  console.log('PASS',width,reducedMotion,'forward/reverse, cue, reload, menu');await page.close();
+  await page.goto(new URL('#enrichment',base).href);
+  await page.waitForFunction(()=>{const top=document.querySelector('#enrichment')?.getBoundingClientRect().top;return top>=0&&top<200},undefined,{timeout:10000});
+  console.log('PASS',width,reducedMotion,'forward/reverse, cue, reload, menu, direct chapter link');await page.close();
  }
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});
