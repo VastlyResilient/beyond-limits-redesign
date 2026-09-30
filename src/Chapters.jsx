@@ -1,9 +1,76 @@
 import React,{useEffect,useRef,useState} from 'react';
+
 const D=import.meta.env.BASE_URL+'documents/';
+const M=import.meta.env.BASE_URL+'media/';
 const chapters=[['program','Program'],['tutoring','Learning'],['community','Community'],['join','Get involved'],['resources','Resources']];
-export function ChapterNav(){const [active,setActive]=useState('program'),[visible,setVisible]=useState(false),[open,setOpen]=useState(false);useEffect(()=>{let raf;const update=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{const start=document.getElementById('program');setVisible(start.getBoundingClientRect().top<180&&document.querySelector('footer').getBoundingClientRect().top>innerHeight*.5);let current='program';for(const [id]of chapters)if(document.getElementById(id).getBoundingClientRect().top<innerHeight*.4)current=id;setActive(current)})};update();addEventListener('scroll',update,{passive:true});addEventListener('resize',update);return()=>{cancelAnimationFrame(raf);removeEventListener('scroll',update);removeEventListener('resize',update)}},[]);return <nav className={'reading-nav '+(visible?'visible':'')} aria-label="Page chapters" inert={!visible?true:undefined}><button className="reading-toggle" aria-expanded={open} aria-controls="reading-links" onClick={()=>setOpen(!open)}>Contents / {chapters.find(c=>c[0]===active)[1]} <span>{open?'−':'+'}</span></button><div id="reading-links" className={open?'expanded':''}>{chapters.map(([id,label],i)=><a key={id} href={'#'+id} aria-current={active===id?'location':undefined} onClick={()=>setOpen(false)}><small>0{i+1}</small>{label}</a>)}</div></nav>}
-export function FirstSteps(){const ref=useRef(),[step,setStep]=useState(-1);useEffect(()=>{const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)setStep(v=>Math.max(v,Number(e.target.dataset.step)))}),{threshold:.55});ref.current.querySelectorAll('[data-step]').forEach(e=>observer.observe(e));return()=>observer.disconnect()},[]);return <section className="first-steps" ref={ref} aria-labelledby="first-steps-title"><div className="section-head reveal"><p className="eyebrow">YOUR FIRST THREE STEPS</p><h2 id="first-steps-title">A conversation.<br/>A plan. A beginning.</h2></div><div className="steps-path" style={{'--path':(step+1)/3}}>{[['Share your needs','Tell the team about your learner’s goals and the subjects where support would help.'],['Discuss your learning plan','Ask about fit, fees, available times and whether in-person or remote sessions work best.'],['Begin your sessions','Complete the participant agreement and confirm arrangements with the team.']].map(([title,copy],i)=><article key={title} data-step={i} className={step>=i?'active':''}><span className="step-number">0{i+1}</span><h3>{title}</h3><p>{copy}</p></article>)}</div><a className="text-link" href="#join">Start with the team ↗</a></section>}
+
+export function ChapterNav(){
+  const [active,setActive]=useState('program'),[visible,setVisible]=useState(false),[open,setOpen]=useState(false),[arriving,setArriving]=useState(false);
+  const arrivalTimer=useRef(),navRef=useRef();
+  useEffect(()=>{
+    let raf;
+    const update=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{
+      const start=document.getElementById('program'),footer=document.querySelector('footer');
+      if(!start||!footer)return;
+      const shown=start.getBoundingClientRect().top<180&&footer.getBoundingClientRect().top>innerHeight*.5;
+      setVisible(shown);
+      if(!shown)setOpen(false);
+      let current='program';
+      for(const [id] of chapters){const target=document.getElementById(id);if(target&&target.getBoundingClientRect().top<innerHeight*.42)current=id}
+      setActive(current);
+    })};
+    update();addEventListener('scroll',update,{passive:true});addEventListener('resize',update);
+    return()=>{cancelAnimationFrame(raf);clearTimeout(arrivalTimer.current);removeEventListener('scroll',update);removeEventListener('resize',update)};
+  },[]);
+  useEffect(()=>{if(!open)return;const onKey=e=>{if(e.key==='Escape')setOpen(false)},close=()=>setOpen(false),onPointer=e=>{if(!navRef.current?.contains(e.target))setOpen(false)};addEventListener('keydown',onKey);addEventListener('scroll',close,{passive:true});addEventListener('hashchange',close);addEventListener('pointerdown',onPointer);return()=>{removeEventListener('keydown',onKey);removeEventListener('scroll',close);removeEventListener('hashchange',close);removeEventListener('pointerdown',onPointer)}},[open]);
+  const index=chapters.findIndex(c=>c[0]===active);
+  const choose=()=>{setOpen(false);setArriving(true);clearTimeout(arrivalTimer.current);arrivalTimer.current=setTimeout(()=>setArriving(false),850)};
+  return <nav ref={navRef} className={'reading-nav '+(visible?'visible ':'')+(open?'is-open ':'')+(arriving?'is-arriving':'')} aria-label="Page chapters" inert={!visible?true:undefined}>
+    <button className="reading-toggle" aria-expanded={open} aria-controls="reading-links" onClick={()=>setOpen(!open)}><span className="reading-current"><small>0{index+1}</small>{chapters[index][1]}</span><span className="reading-chevron" aria-hidden="true">{open?'−':'+'}</span></button>
+    <div className="chapter-progress" aria-hidden="true">{chapters.map(([id],i)=><span key={id} className={i<=index?'complete':''}/>)}</div>
+    <div id="reading-links" className={open?'expanded':''}>{chapters.map(([id,label],i)=><a key={id} href={'#'+id} aria-current={active===id?'location':undefined} onClick={choose}><small>0{i+1}</small>{label}</a>)}</div>
+  </nav>;
+}
+
+export function FirstSteps(){
+  const ref=useRef(),[step,setStep]=useState(-1);
+  useEffect(()=>{
+    let raf;
+    const update=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{
+      if(!ref.current)return;
+      const items=[...ref.current.querySelectorAll('[data-step]')],group=ref.current.querySelector('.steps-path');
+      let next=-1;
+      if(matchMedia('(max-width:700px)').matches){items.forEach((item,i)=>{if(item.getBoundingClientRect().top<innerHeight*.76)next=i})}
+      else{const top=group.getBoundingClientRect().top;[.78,.57,.36].forEach((threshold,i)=>{if(top<innerHeight*threshold)next=i})}
+      setStep(next);
+    })};
+    update();addEventListener('scroll',update,{passive:true});addEventListener('resize',update);
+    return()=>{cancelAnimationFrame(raf);removeEventListener('scroll',update);removeEventListener('resize',update)};
+  },[]);
+  return <section className="first-steps" ref={ref} aria-labelledby="first-steps-title"><div className="section-head reveal"><p className="eyebrow">YOUR FIRST THREE STEPS</p><h2 id="first-steps-title">A conversation.<br/>A plan. A beginning.</h2></div><div className="steps-path" style={{'--path':(step+1)/3}}>{[['Share your needs','Tell the team about your learner’s goals and the subjects where support would help.'],['Discuss your learning plan','Ask about fit, fees, available times and whether in-person or remote sessions work best.'],['Begin your sessions','Complete the participant agreement and confirm arrangements with the team.']].map(([title,copy],i)=><article key={title} data-step={i} className={step>=i?'active':''}><span className="step-number">0{i+1}</span><h3>{title}</h3><p>{copy}</p></article>)}</div><a className="text-link" href="#join">Start with the team ↗</a></section>;
+}
+
 export function LearningCards(){return <div className="learning-cards">{[['01','Tutoring','Support for the subject. Space for the question.','Individualized math and science tutoring, generally for grades 4–10, with in-person and remote options.','tutoring'],['02','Mentoring','A little guidance from someone a step ahead.','Working with high school and college tutors creates opportunities for informal encouragement and perspective.','enrichment'],['03','Enrichment','Room to explore beyond the homework.','Workshops and summer opportunities extend learning into coding, writing, study skills and more.','enrichment']].map(([n,title,short,copy,id])=><details key={title} className="learning-card reveal"><summary><span className="eyebrow">{n} / A WAY FORWARD</span><h3>{title}</h3><p>{short}</p><span className="card-expand" aria-hidden="true">+</span></summary><div className="learning-card-detail"><p>{copy}</p><a className="text-link" href={'#'+id}>Explore {title.toLowerCase()} ↗</a></div></details>)}</div>}
-const resources=[['For families',[['District flyer','district-flyer.pdf'],['Participant agreement','participant-agreement.pdf'],['Summer 2025 flyer · English (archive)','summer-2025-english.pdf'],['Summer 2025 flyer · Español (archive)','summer-2025-spanish.pdf']]],['For tutors',[['Tutor recruitment & application','tutor-recruitment.pdf']]],['News & program information',[['Articles informing our work','program-flyer.pdf'],['Program highlights','program-highlights.pdf'],['Beyond Limits presentation','program-presentation.pdf']]],['Support the program',[['Sponsorship kit · 2025–2026','sponsorship-2025-2026.pdf']]]];
-export function ResourceLibrary(){return <div className="resource-library">{resources.map(([title,links],i)=><details key={title} open={i===0}><summary><span>{title}</span><small>{links.length} {links.length===1?'document':'documents'}</small></summary><div>{links.map(([label,file])=><a key={file} href={D+file}><span>{label}</span><small>PDF ↗</small></a>)}</div></details>)}</div>}
-export function ClosingChoices(){return <section className="section closing-choices"><div className="section-head reveal"><p className="eyebrow">THE NEXT CHAPTER IS YOURS</p><h2>Choose your way forward.</h2></div><div>{[['Find support','A conversation about your learner’s next step.','join'],['Become a tutor','Share your knowledge. Support someone’s confidence.','become-tutor'],['Support a learner','Help make academic opportunity more accessible.','support']].map(([title,copy,id],i)=><a className="reveal" key={id} href={'#'+id}><small>0{i+1}</small><h3>{title}</h3><p>{copy}</p><span aria-hidden="true">↗</span></a>)}</div></section>}
+
+const resources=[
+  ['For families',[
+    ['District flyer','district-flyer.pdf','Published tutoring details, fees and eligibility guidance.'],
+    ['Participant agreement','participant-agreement.pdf','The agreement to review when getting started.'],
+    ['Summer 2025 flyer · English (archive)','summer-2025-english.pdf','Past summer program information in English.'],
+    ['Summer 2025 flyer · Español (archive)','summer-2025-spanish.pdf','Past summer program information in Spanish.']
+  ]],
+  ['For tutors', [['Tutor recruitment & application','tutor-recruitment.pdf','Published information for prospective high school and college tutors.']]],
+  ['News & program information',[
+    ['Articles informing our work','program-flyer.pdf','Selected reading and context behind the program.'],
+    ['Program highlights','program-highlights.pdf','An overview of activities and partnerships.'],
+    ['Beyond Limits presentation','program-presentation.pdf','A presentation introducing the program.']
+  ]],
+  ['Support the program', [['Sponsorship kit · 2025–2026','sponsorship-2025-2026.pdf','Ways for local partners to support academic opportunity.']]]
+];
+
+export function ResourceLibrary(){
+  const [selected,setSelected]=useState(resources[0][1][0]),[openGroups,setOpenGroups]=useState([0]);
+  return <div className="resource-desk"><div className="resource-library" aria-label="Program documents">{resources.map(([title,links],i)=><details key={title} open={openGroups.includes(i)} onToggle={e=>{const isOpen=e.currentTarget.open;setOpenGroups(previous=>isOpen?(previous.includes(i)?previous:[...previous,i]):previous.includes(i)?previous.filter(group=>group!==i):previous)}}><summary><span>{title}</span><small>{links.length} {links.length===1?'document':'documents'}</small></summary><div>{links.map(item=><div className={'resource-row '+(selected[1]===item[1]?'selected':'')} key={item[1]}><button type="button" onClick={()=>setSelected(item)} aria-pressed={selected[1]===item[1]} aria-label={'Preview '+item[0]}>{item[0]}</button><a className="resource-desktop-link" href={D+item[1]} aria-label={'Open '+item[0]+' PDF'}>PDF ↗</a><a className="resource-mobile-link" href={D+item[1]}>{item[0]} <span>PDF ↗</span></a></div>)}</div></details>)}</div><aside className="resource-preview" aria-live="polite" aria-label="Selected document"><div className="preview-paper" key={selected[1]}><img src={M+'document-previews/'+selected[1].replace('.pdf','.jpg')} alt={'First page of '+selected[0]} loading="lazy"/></div><div className="preview-meta" key={selected[1]+"-meta"}><span className="eyebrow">FROM THE BEYOND LIMITS LIBRARY</span><h3>{selected[0]}</h3><p>{selected[2]}</p><span className="preview-type">PDF DOCUMENT</span><a className="text-link" href={D+selected[1]}>Open document ↗</a></div></aside></div>;
+}
+
+export function ClosingChoices(){return <section className="section closing-choices"><div className="section-head reveal"><p className="eyebrow">THE NEXT CHAPTER IS YOURS</p><h2>Choose your way forward.</h2></div><div className="closing-choices-grid" data-stagger-group>{[['Find support','A conversation about your learner’s next step.','join'],['Become a tutor','Share your knowledge. Support someone’s confidence.','become-tutor'],['Support a learner','Help make academic opportunity more accessible.','support']].map(([title,copy,id],i)=><a className="scroll-stage" data-stage={i} key={id} href={'#'+id}><small>0{i+1}</small><h3>{title}</h3><p>{copy}</p><span aria-hidden="true">↗</span></a>)}</div></section>}
