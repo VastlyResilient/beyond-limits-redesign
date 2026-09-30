@@ -40,3 +40,5 @@
 @media(prefers-reduced-motion:reduce){.chapter-overlay,.chapter-menu,.chapter-links{animation:none}}
 @media(prefers-contrast:more){.header,.header.settled,.chapter-menu{background:#f1f5f5;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:#142d4c}.chapter-overlay{backdrop-filter:none}}
 @supports not (backdrop-filter:blur(1px)){.header{background:#eef4f5f5}}
+
+.motion-choice{font-size:12px;min-height:44px;padding:8px 12px;border:1px solid #142d4c30;border-radius:8px}.chapter-bottom{flex-wrap:wrap}
