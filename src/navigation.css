@@ -44,3 +44,10 @@
 .motion-choice{font-size:12px;min-height:44px;padding:8px 12px;border:1px solid #142d4c30;border-radius:8px}.chapter-bottom{flex-wrap:wrap}
 
 .hero-track.reduced .hero-actions{display:flex;flex-wrap:wrap;gap:12px}.hero-track.reduced .hero-copy{top:20%}@media(max-width:700px){.hero-track.reduced .hero-copy{top:15%}.hero-track.reduced .hero-actions .button{padding:12px 16px;gap:12px}}
+
+/* Glass belongs to the completed-film chapter; the brand remains visible. */
+.header,.header.settled{background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;isolation:isolate}
+.header::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;border:1px solid #ffffff75;background:linear-gradient(120deg,rgb(239 248 255 / .22),rgb(225 239 246 / .17) 48%,rgb(255 251 237 / .24));box-shadow:inset 0 1px 0 #ffffff80,0 8px 32px #142d4c0d;backdrop-filter:blur(12px) saturate(115%);-webkit-backdrop-filter:blur(12px) saturate(115%);opacity:var(--glass,0)}
+.hero-rail{background:rgb(244 249 248 / .22);border:1px solid #ffffff66;border-radius:12px;backdrop-filter:blur(6px) saturate(110%);-webkit-backdrop-filter:blur(6px) saturate(110%);box-shadow:inset 0 1px 0 #ffffff45}
+@media(prefers-contrast:more){.header::before,.hero-rail{background:#f1f5f5}}
+@supports not (backdrop-filter:blur(1px)){.header::before,.hero-rail{background:#eef4f5d9}}
