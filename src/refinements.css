@@ -86,11 +86,15 @@ details.recipient-row{display:block;padding:0;margin-top:25px;border-top:1px sol
 .recipient-row summary::-webkit-details-marker,.recipient-row summary::after{display:none}
 .recipient-row .recipient-identity{display:block;flex:1}
 .recipient-row .recipient-identity span{display:block;font-size:12px;margin-top:6px;color:var(--muted)}
-.recipient-open{display:grid;place-items:center;width:33px;height:33px;color:#466783}
-.recipient-open svg{grid-area:1/1;width:33px;height:33px;stroke-width:1.6}
-.recipient-open .recipient-icon-open{display:none}
-.recipient-row[open] .recipient-icon-closed{display:none}
-.recipient-row[open] .recipient-icon-open{display:block;color:#9a7b43}
+.recipient-row .recipient-cue{display:inline-flex;align-items:center;gap:6px;width:max-content;margin-top:12px;padding-bottom:3px;border-bottom:1px solid #ad9568;color:#31546f;font-size:11px;font-weight:650;letter-spacing:.02em}
+.recipient-row .recipient-cue span{display:inline;margin:0;color:inherit;font-size:inherit}
+.recipient-row .recipient-cue .recipient-cue-open{display:none}
+.recipient-row[open] .recipient-cue .recipient-cue-closed{display:none}
+.recipient-row[open] .recipient-cue .recipient-cue-open{display:inline}
+.recipient-cue svg{width:14px;height:14px;stroke-width:1.7;transition:transform .25s ease}
+.recipient-row[open] .recipient-cue svg{transform:rotate(180deg)}
+.recipient-row summary:hover .recipient-cue,.recipient-row summary:focus-visible .recipient-cue{color:#8a693b;border-color:#8a693b}
+.recipient-row summary:focus-visible{outline:2px solid #ad9568;outline-offset:3px}
 .recipient-detail{padding:0 0 15px 107px;animation:quote-page .32s ease both}
 .recipient-detail p{font-size:16px;max-width:420px;margin:0;color:#455d70}
 
@@ -102,7 +106,8 @@ details.recipient-row{display:block;padding:0;margin-top:25px;border-top:1px sol
 .resource-group{border-bottom:1px solid #c6d1d1}
 .resource-group-toggle{display:flex;align-items:center;gap:15px;width:100%;min-height:70px;padding:16px 0;text-align:left;font-size:20px}
 .resource-group-toggle small{font-size:11px;color:#526479;margin-left:auto}
-.resource-group-mark{width:24px;height:24px;flex:none;stroke-width:1.6;color:#466783}
+.resource-group-mark{width:16px;height:16px;flex:none;stroke-width:1.7;color:#587181;transition:transform .25s ease}
+.resource-group.open .resource-group-mark{transform:rotate(180deg)}
 .resource-group-reveal>div{opacity:0;transform:translateY(7px);transition:opacity .23s,transform .23s}
 .resource-group.open .resource-group-reveal>div{opacity:1;transform:none;transition-delay:.17s}
 .resource-group-toggle:hover,.resource-group-toggle:focus-visible{color:#866e3f}
@@ -151,5 +156,5 @@ details.recipient-row{display:block;padding:0;margin-top:25px;border-top:1px sol
   [data-parallax]>img{transform:scale(1.06) translateY(var(--photo-shift,0%))}
 }
 @media(max-width:390px){.header .reading-nav{width:42vw}.reading-current{gap:4px}.reading-nav .reading-toggle{font-size:11px;padding-left:7px;padding-right:7px}}
-@media(prefers-reduced-motion:reduce){.scroll-stage,.chapter-grid .scroll-stage::before,.join-grid::before,.reflection-neighbors>div,.header,.header::before,.header .wordmark img,.header .menu-button,.recipient-open,.learning-card,.learning-card-reveal,.resource-group-reveal,.learning-card-detail,.resource-group-reveal>div,.learning-card-action svg,.reading-chevron{transition:none}.quote-copy,.preview-paper,.preview-meta,.recipient-detail{animation:none}[data-parallax]>img{transform:none;will-change:auto}}
+@media(prefers-reduced-motion:reduce){.scroll-stage,.chapter-grid .scroll-stage::before,.join-grid::before,.reflection-neighbors>div,.header,.header::before,.header .wordmark img,.header .menu-button,.recipient-cue svg,.resource-group-mark,.learning-card,.learning-card-reveal,.resource-group-reveal,.learning-card-detail,.resource-group-reveal>div,.learning-card-action svg,.reading-chevron{transition:none}.quote-copy,.preview-paper,.preview-meta,.recipient-detail{animation:none}[data-parallax]>img{transform:none;will-change:auto}}
 @media(prefers-contrast:more){.header.over-dark::before{background:#0e2946;border:2px solid white;backdrop-filter:none;-webkit-backdrop-filter:none}.header.over-dark{color:#fff}.header.over-dark .desktop-nav>.nav-group>a,.header.over-dark .menu-button{color:#fff}}
