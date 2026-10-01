@@ -19,12 +19,18 @@ const base=process.env.SITE_URL||'http://127.0.0.1:4194/';
    assert.equal(await page.locator('.scroll-cue').count(),progress===0?1:0);
   }
   await page.evaluate(()=>{const h=document.querySelector('.hero-track');scrollTo({top:h.offsetTop+h.offsetHeight-h.querySelector('.hero-sticky').offsetHeight,behavior:'instant'})});
-  await page.getByRole('button',{name:'Open navigation'}).click();
-  await page.keyboard.press('Escape');
-  assert.equal(await page.locator('body').evaluate(e=>e.style.overflow),'');
-  if(reducedMotion==='reduce'){
+  if(width<1101){
    await page.getByRole('button',{name:'Open navigation'}).click();
-   await page.getByRole('button',{name:'Use reduced motion'}).click();await page.reload();
+   assert.equal(await page.locator('.simple-menu nav a').count(),6);
+   await page.keyboard.press('Escape');
+   assert.equal(await page.locator('body').evaluate(e=>e.style.overflow),'');
+  }else{
+   await page.locator('.simple-nav a').first().waitFor({state:'visible'});
+   assert.equal(await page.locator('.simple-nav a:visible').count(),6);
+   assert.equal(await page.locator('.nav-sub:visible,.reading-nav:visible').count(),0);
+  }
+  if(reducedMotion==='reduce'){
+   await page.evaluate(()=>localStorage.setItem('beyond-limits-motion','reduced'));await page.reload();
    assert.equal(await page.locator('.hero-track.reduced').count(),1);
   }
   await page.goto(new URL('#enrichment',base).href);
