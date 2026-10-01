@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {CirclePlus,CircleMinus} from 'lucide-react';
+import {CirclePlus,CircleMinus,Plus,Minus} from 'lucide-react';
 
 const D=import.meta.env.BASE_URL+'documents/';
 const M=import.meta.env.BASE_URL+'media/';
@@ -27,7 +27,7 @@ export function ChapterNav(){
   const index=chapters.findIndex(c=>c[0]===active);
   const choose=()=>{setOpen(false);setArriving(true);clearTimeout(arrivalTimer.current);arrivalTimer.current=setTimeout(()=>setArriving(false),850)};
   return <nav ref={navRef} className={'reading-nav '+(visible?'visible ':'')+(open?'is-open ':'')+(arriving?'is-arriving':'')} aria-label="Page chapters" inert={!visible?true:undefined}>
-    <button className="reading-toggle" aria-expanded={open} aria-controls="reading-links" onClick={()=>setOpen(!open)}><span className="reading-current"><small>0{index+1}</small>{chapters[index][1]}</span><span className="reading-chevron" aria-hidden="true">{open?'−':'+'}</span></button>
+    <button className="reading-toggle" aria-expanded={open} aria-controls="reading-links" onClick={()=>setOpen(!open)}><span className="reading-current"><small>0{index+1}</small>{chapters[index][1]}</span><span className="reading-chevron" aria-hidden="true">{open?<Minus size={17} strokeWidth={1.8}/>:<Plus size={17} strokeWidth={1.8}/>}</span></button>
     <div className="chapter-progress" aria-hidden="true">{chapters.map(([id],i)=><span key={id} className={i<=index?'complete':''}/>)}</div>
     <div id="reading-links" className={open?'expanded':''}>{chapters.map(([id,label],i)=><a key={id} href={'#'+id} aria-current={active===id?'location':undefined} onClick={choose}><small>0{i+1}</small>{label}</a>)}</div>
   </nav>;

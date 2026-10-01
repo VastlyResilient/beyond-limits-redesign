@@ -16,6 +16,14 @@
 .reading-nav .reading-toggle{display:flex;width:100%;min-height:39px;padding:5px 11px 3px;gap:6px;font-size:11px;white-space:nowrap}
 .reading-current{display:flex;align-items:center;gap:7px;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .reading-chevron{font-size:18px;line-height:1}
+.reading-chevron{display:grid;place-items:center;width:20px;height:20px}
+.chapter-expand{display:grid;place-items:center}
+summary::after{display:none}
+.detail-indicator{display:grid;place-items:center;flex:none;width:24px;height:24px;margin-left:auto}
+.detail-indicator svg{grid-area:1/1;width:22px;height:22px;stroke-width:1.8}
+.detail-indicator .when-open{display:none}
+details[open]>summary .detail-indicator .when-closed{display:none}
+details[open]>summary .detail-indicator .when-open{display:block}
 .header .reading-nav #reading-links{display:none;position:absolute;top:calc(100% + 14px);right:0;width:240px;max-height:65svh;overflow:auto;padding:9px;background:#f9f8f0;color:#142d4c;border:1px solid #d7dfdc;border-radius:16px;box-shadow:0 18px 42px #0a254632}
 .header .reading-nav #reading-links.expanded{display:flex;flex-direction:column}
 .header .reading-nav #reading-links a{min-height:47px;padding:12px 14px}
