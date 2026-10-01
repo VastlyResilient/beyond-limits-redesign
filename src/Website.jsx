@@ -8,7 +8,7 @@ import './fonts.css';import './website.css';import './mobile-film.css';import '.
 const BASE=import.meta.env.BASE_URL;
 const M=`${BASE}media/`,D=`${BASE}documents/`;
 const email='info@beyondlimitsacademics.org';
-const navLinks=[['The program','program'],['Learning','tutoring'],['Our community','community'],['Get involved','join'],['Resources','resources'],['Contact','contact']];
+const navLinks=[['Program','program'],['Community','community'],['Get involved','join'],['Resources','resources'],['Contact','contact']];
 function Icon({type='book'}){const glyph={book:BookOpen,sun:Sun,people:UsersRound,arrow:ArrowUpRight}[type]||BookOpen;return React.createElement(glyph,{'aria-hidden':true,strokeWidth:1.5})}
 function DetailIndicator(){return <span className="detail-indicator" aria-hidden="true"><Plus className="when-closed"/><Minus className="when-open"/></span>}
 function Button({href,children,light=false}){return <a className={'button '+(light?'light':'')} href={href}>{children}<Icon type="arrow"/></a>}

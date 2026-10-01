@@ -21,12 +21,12 @@ const base=process.env.SITE_URL||'http://127.0.0.1:4194/';
   await page.evaluate(()=>{const h=document.querySelector('.hero-track');scrollTo({top:h.offsetTop+h.offsetHeight-h.querySelector('.hero-sticky').offsetHeight,behavior:'instant'})});
   if(width<781){
    await page.getByRole('button',{name:'Open navigation'}).click();
-   assert.equal(await page.locator('.simple-menu nav a').count(),6);
+   assert.equal(await page.locator('.simple-menu nav a').count(),5);
    await page.keyboard.press('Escape');
    assert.equal(await page.locator('body').evaluate(e=>e.style.overflow),'');
   }else{
    await page.locator('.simple-nav a').first().waitFor({state:'visible'});
-   assert.equal(await page.locator('.simple-nav a:visible').count(),6);
+   assert.equal(await page.locator('.simple-nav a:visible').count(),5);
    assert.equal(await page.locator('.nav-sub:visible,.reading-nav:visible').count(),0);
   }
   if(reducedMotion==='reduce'){
