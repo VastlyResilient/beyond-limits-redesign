@@ -1,13 +1,13 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {CirclePlus,CircleMinus,Plus,Minus} from 'lucide-react';
+import {CirclePlus,CircleMinus,ChevronDown} from 'lucide-react';
 
 const D=import.meta.env.BASE_URL+'documents/';
 const M=import.meta.env.BASE_URL+'media/';
 const chapters=[['program','Program'],['tutoring','Learning'],['community','Community'],['join','Get involved'],['resources','Resources']];
 
 export function ChapterNav(){
-  const [active,setActive]=useState('program'),[visible,setVisible]=useState(false),[open,setOpen]=useState(false),[arriving,setArriving]=useState(false);
-  const arrivalTimer=useRef(),navRef=useRef();
+  const [active,setActive]=useState('program'),[visible,setVisible]=useState(false),[open,setOpen]=useState(false);
+  const navRef=useRef();
   useEffect(()=>{
     let raf;
     const update=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{
@@ -21,14 +21,13 @@ export function ChapterNav(){
       setActive(current);
     })};
     update();addEventListener('scroll',update,{passive:true});addEventListener('resize',update);
-    return()=>{cancelAnimationFrame(raf);clearTimeout(arrivalTimer.current);removeEventListener('scroll',update);removeEventListener('resize',update)};
+    return()=>{cancelAnimationFrame(raf);removeEventListener('scroll',update);removeEventListener('resize',update)};
   },[]);
   useEffect(()=>{if(!open)return;const onKey=e=>{if(e.key==='Escape')setOpen(false)},close=()=>setOpen(false),onPointer=e=>{if(!navRef.current?.contains(e.target))setOpen(false)};addEventListener('keydown',onKey);addEventListener('scroll',close,{passive:true});addEventListener('hashchange',close);addEventListener('pointerdown',onPointer);return()=>{removeEventListener('keydown',onKey);removeEventListener('scroll',close);removeEventListener('hashchange',close);removeEventListener('pointerdown',onPointer)}},[open]);
   const index=chapters.findIndex(c=>c[0]===active);
-  const choose=()=>{setOpen(false);setArriving(true);clearTimeout(arrivalTimer.current);arrivalTimer.current=setTimeout(()=>setArriving(false),850)};
-  return <nav ref={navRef} className={'reading-nav '+(visible?'visible ':'')+(open?'is-open ':'')+(arriving?'is-arriving':'')} aria-label="Page chapters" inert={!visible?true:undefined}>
-    <button className="reading-toggle" aria-expanded={open} aria-controls="reading-links" onClick={()=>setOpen(!open)}><span className="reading-current"><small>0{index+1}</small>{chapters[index][1]}</span><span className="reading-chevron" aria-hidden="true">{open?<Minus size={17} strokeWidth={1.8}/>:<Plus size={17} strokeWidth={1.8}/>}</span></button>
-    <div className="chapter-progress" aria-hidden="true">{chapters.map(([id],i)=><span key={id} className={i<=index?'complete':''}/>)}</div>
+  const choose=()=>setOpen(false);
+  return <nav ref={navRef} className={'reading-nav '+(visible?'visible ':'')+(open?'is-open':'')} aria-label="Page chapters" inert={!visible?true:undefined}>
+    <button className="reading-toggle" aria-expanded={open} aria-controls="reading-links" onClick={()=>setOpen(!open)}><span className="reading-current"><small>0{index+1}</small>{chapters[index][1]}</span><ChevronDown className="reading-chevron" aria-hidden="true"/></button>
     <div id="reading-links" className={open?'expanded':''}>{chapters.map(([id,label],i)=><a key={id} href={'#'+id} aria-current={active===id?'location':undefined} onClick={choose}><small>0{i+1}</small>{label}</a>)}</div>
   </nav>;
 }
@@ -52,7 +51,7 @@ export function FirstSteps(){
 }
 
 export function LearningCards(){return <div className="learning-cards">{[['01','Tutoring','Support for the subject. Space for the question.','Individualized math and science tutoring, generally for grades 4–10, with in-person and remote options.','tutoring'],['02','Mentoring','A little guidance from someone a step ahead.','Working with high school and college tutors creates opportunities for informal encouragement and perspective.','enrichment'],['03','Enrichment','Room to explore beyond the homework.','Workshops and summer opportunities extend learning into coding, writing, study skills and more.','enrichment']].map(([n,title,short,copy,id])=><LearningCard key={title} n={n} title={title} short={short} copy={copy} id={id}/>)}</div>}
-function LearningCard({n,title,short,copy,id}){const ref=useRef(),[open,setOpen]=useState(false),[seen,setSeen]=useState(false),panelId='learning-card-'+n;useEffect(()=>{const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){setSeen(true);observer.disconnect()}},{threshold:.12});observer.observe(ref.current);return()=>observer.disconnect()},[]);return <article ref={ref} className={'learning-card '+(seen?'seen ':'')+(open?'open':'')}><button className="learning-card-trigger" aria-expanded={open} aria-controls={panelId} onClick={()=>setOpen(!open)}><span className="eyebrow">{n} / A WAY FORWARD</span><h3>{title}</h3><p>{short}</p>{open?<CircleMinus className="card-expand" aria-hidden="true"/>:<CirclePlus className="card-expand" aria-hidden="true"/>}</button><div id={panelId} className="learning-card-reveal" inert={!open?true:undefined}><div className="learning-card-inner"><div className="learning-card-detail"><p>{copy}</p><a className="text-link" href={'#'+id}>Explore {title.toLowerCase()} ↗</a></div></div></div></article>}
+function LearningCard({n,title,short,copy,id}){const ref=useRef(),[open,setOpen]=useState(false),[seen,setSeen]=useState(false),panelId='learning-card-'+n;useEffect(()=>{const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){setSeen(true);observer.disconnect()}},{threshold:.12});observer.observe(ref.current);return()=>observer.disconnect()},[]);return <article ref={ref} className={'learning-card '+(seen?'seen ':'')+(open?'open':'')}><button className="learning-card-trigger" aria-expanded={open} aria-controls={panelId} onClick={()=>setOpen(!open)}><span className="eyebrow">{n} / A WAY FORWARD</span><h3>{title}</h3><p>{short}</p><span className="learning-card-action">{open?'Close details':'Read more'}<ChevronDown aria-hidden="true"/></span></button><div id={panelId} className="learning-card-reveal" inert={!open?true:undefined}><div className="learning-card-inner"><div className="learning-card-detail"><p>{copy}</p><a className="text-link" href={'#'+id}>Explore {title.toLowerCase()} ↗</a></div></div></div></article>}
 
 const resources=[
   ['For families',[
